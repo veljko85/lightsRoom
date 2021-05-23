@@ -1,4 +1,12 @@
 var canvas = document.getElementById("renderCanvas");
+var skullBut = document.getElementById('skull');
+var bomBoxBut = document.getElementById('bomBox');
+var barrelBut = document.getElementById('barrel');
+var loading = document.getElementById('loading');
+
+setTimeout(function () {
+    loading.style.display = "none";
+  }, 2500);
 
 var engine = null;
 var scene = null;
@@ -8,11 +16,16 @@ const createScene =  () => {
 const scene = new BABYLON.Scene(engine);
 
 /**** Set camera and light *****/
-var roomColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+
 const camera = new BABYLON.ArcRotateCamera("camera", 4.72, 1.6, 0, new BABYLON.Vector3(0, 0, -550));
 camera.attachControl(canvas, true);
-camera.lowerRadiusLimit = camera.upperRadiusLimit = camera.radius = 0; 
-// camera.rotation.x = 0;
+//denie scroll
+// camera.lowerRadiusLimit = camera.upperRadiusLimit = camera.radius = 0; 
+
+//set lights
+//default room color
+var roomColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+
 const light2 = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 1));
 light2.intensity = 0.7;
 light2.diffuse = roomColor;
@@ -23,22 +36,16 @@ light3.intensity = 0.7;
 light3.diffuse = roomColor;
 const light5 = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(-1, -1, -1));
 light5.intensity = 0.2;
-// var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 0, 0), scene);
-// light.diffuse = lightColor;
-// light.specular = lightColor;
-// light.intensity = 0;
-// var light4 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 0, 0), scene);
-// light4.diffuse = lightColor2;
-// light4.specular = lightColor2;
-// light4.intensity = 10;
 
+//room lights to change
 var roomColors = [
-    normalRoom = new BABYLON.Color3(0.4, 0.4, 0.4),
-    purpleRoom = new BABYLON.Color3(0.4, 0.0, 0.4),
-    greenRoom = new BABYLON.Color3(0.0, 0.4, 0.0),
-    redRoom = new BABYLON.Color3(0.4, 0.0, 0.0),
-    yellowRoom = new BABYLON.Color3(0.4, 0.4, 0.0)
+   /* normalRoom */ new BABYLON.Color3(0.4, 0.4, 0.4),
+  /*  purpleRoom */ new BABYLON.Color3(0.4, 0.0, 0.4),
+  /*  greenRoom */ new BABYLON.Color3(0.0, 0.4, 0.0),
+  /*  redRoom */ new BABYLON.Color3(0.4, 0.0, 0.0),
+  /*  yellowRoom */ new BABYLON.Color3(0.4, 0.4, 0.0)
 ];
+// function to change lights on click
 var t = 0;
 var changeLightColor = function(meshEvent) {
 var pickedMesh = meshEvent.meshUnderPointer; 
@@ -48,23 +55,11 @@ light2.diffuse = roomColors[t];
 light3.diffuse = roomColors[t];
 }
 
-
-//const aaa = BABYLON.MeshBuilder.CreateBox("box", {width: 1, height: 0.2, depth: 3});
-
-//var vls = new BABYLON.VolumetricLightScatteringPostProcess('vls', 1.0, camera, aaa, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
-
-//     var defaultMesh = BABYLON.VolumetricLightScatteringPostProcess.CreateDefaultMesh("meshName", scene);
-//     var vls = new BABYLON.VolumetricLightScatteringPostProcess('vls', 1.0, camera, defaultMesh, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
-//     var mesh = vls.mesh;
-//     vls.exposure = 0;
-
-// vls.useDiffuseColor = true; // False as default
-// vls.mesh.material.diffuseColor = new BABYLON.Color3(0.0, 1.0, 0.0);
-
+//set faces for room
 var columns = 6;  // 6 columns
 var rows = 1;  // 1 row
 
-//alien sprite
+
 var faceUV = new Array(6);
 
 //set all faces to same
@@ -72,52 +67,151 @@ for (var i = 0; i < 6; i++) {
 faceUV[i] = new BABYLON.Vector4(i / columns, 0, (i + 1) / columns, 1 / rows);
 }
 
-
+//create room
 var room = BABYLON.MeshBuilder.CreateBox("room", {width: 700, height: 500, depth: 1200, faceUV: faceUV}, scene);
 roomMaterial = new BABYLON.StandardMaterial("roomMaterial", scene);
 roomMaterial.diffuseTexture = new BABYLON.Texture("room1.jpg", scene);
-roomMaterial.backFaceCulling = false;
-// room.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-room.diffuseColor = new BABYLON.Color3(0, 0, 0);
-room.specularColor = new BABYLON.Color3(0, 0, 0);
-// room.alpha = 1;	
+roomMaterial.backFaceCulling = false;	
 room.material = roomMaterial;
 
+//defaut light shape
+var lightShape = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 30});
 
-var rad1 = BABYLON.MeshBuilder.CreateBox("rad1", {width: 50, height: 10, depth: 150});
+lightShape.material = new BABYLON.StandardMaterial("lightShapeMat", scene);
+lightShape.material.emissiveColor = roomColor;
+lightShape.position = new BABYLON.Vector3(0, 240, 60);
+// lightShape.dispose;
+    // scene.removeMesh(lightShape);
+// var lopta = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 30});
+// lopta.position.y = 50;
+// lopta.visibility = 0;
 
-// var rad1 = BABYLON.Mesh.CreateSphere("rad1", 8, 16, scene);
-// var rad1 = BABYLON.Mesh.CreateCylinder("rad1", 10, 5, 5, 8, 8, scene);
-//rad1.visibility = 1;
 
-rad1.material = new BABYLON.StandardMaterial("bmat", scene);
-//rad1.material.diffuseColor = new BABYLON.Color3(0.0, 0.0, 0.0);
-// rad1.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
-rad1.material.emissiveColor = roomColor;
-//rad1.material.backFaceCulling = false;
+// let imgClass = document.getElementsByClassName('img');
+var models = ["skull.glb", "bomBox.glb", "scullAndBomBox.glb"];
+// for (let i = 0; i < imgClass.length; i++) {
+//     imgClass[i].addEventListener("click", () =>{
+//         var model = models[i];
+//     })
+// }
+// var model = "skull.glb";
+var m = 0;
+var changeModel = function(meshEvent) {
+    
+// var pickedMesh = meshEvent.meshUnderPointer; 
+if(m < 2){m += 1}else{m=0};
+                
+// model = models[m];
 
-//rad1.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+console.log(m);
 
-rad1.position = new BABYLON.Vector3(0, 150, 0);
-//rad1.position = newMesh.position;
-// rad1.scalingDeterminant *= 2;
 
-var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 1.0, camera, rad1, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
+}
+// var aaa = BABYLON.SceneLoader.ImportMesh("", "", "bomBox.glb", scene, function (newMeshes) {
+//     var bomBox = newMeshes[0];
+//     bomBox.position = new BABYLON.Vector3(0, 0, 0);
+//     // skull.scaling = new BABYLON.Vector3(500, 500, 500);
+//     // Set the target of the camera to the first imported mesh
+//     camera.target = newMeshes[0];
+//     bomBox.dispose();
 
-godrays._volumetricLightScatteringRTT.renderParticles = true;
+//     BABYLON.SceneLoader.ImportMesh("", "", "skull.glb", scene, function (newMeshes) {
+//         var skull = newMeshes[0];
+//         skull.position = new BABYLON.Vector3(0, 0, 0);
+//         // skull.scaling = new BABYLON.Vector3(500, 500, 500);
+//         // Set the target of the camera to the first imported mesh
+//         camera.target = newMeshes[0];
+//         // modelShow.dispose();
+//     });
+// });
 
-// godrays.exposure = 0.2;
-// godrays.decay = 0.5;
-godrays.weight = 0.7;
-godrays.density = 0.5;
+var skull;
+var bomBox;
+var barrel;
 
-//godrays.useDiffuseColor = true; // False as default
-//godrays.mesh.material.diffuseColor = new BABYLON.Color3(0.0, 1.0, 0.0);
+BABYLON.SceneLoader.ImportMesh("", "", "skull.glb", scene, function (newMeshes) {
+    // Set the target of the camera to the first imported mesh
+    camera.target = newMeshes[0];
+    skull = newMeshes[0];
+});
 
+BABYLON.SceneLoader.ImportMesh("", "", "bomBox.glb", scene, function (newMeshes) {
+    // Set the target of the camera to the first imported mesh
+    camera.target = newMeshes[0];
+    bomBox = newMeshes[0];
+    bomBox.dispose();
+});
+
+BABYLON.SceneLoader.ImportMesh("", "", "barrel.glb", scene, function (newMeshes) {
+    // Set the target of the camera to the first imported mesh
+    camera.target = newMeshes[0];
+    barrel = newMeshes[0];
+    barrel.dispose();
+});
+
+skullBut.addEventListener("click", 
+        function () {
+            // alert("ok");
+              //I want to delete the skull or make it invisible and import another mesh
+              skull.dispose();
+            bomBox.dispose();
+            barrel.dispose();
+              BABYLON.SceneLoader.ImportMesh("", "", "skull.glb", scene, function (newMeshes) {
+            // Set the target of the camera to the first imported mesh
+            camera.target = newMeshes[0];
+            skull = newMeshes[0];
+        });
+});
+
+bomBoxBut.addEventListener("click", 
+        function () {
+            // alert("ok");
+              //I want to delete the skull or make it invisible and import another mesh
+              skull.dispose();
+              bomBox.dispose();
+              barrel.dispose();
+              BABYLON.SceneLoader.ImportMesh("", "", "bomBox.glb", scene, function (newMeshes) {
+            // Set the target of the camera to the first imported mesh
+            camera.target = newMeshes[0];
+            bomBox = newMeshes[0];
+        });
+});
+
+barrelBut.addEventListener("click", 
+        function () {
+            // alert("ok");
+              //I want to delete the skull or make it invisible and import another mesh
+              skull.dispose();
+              bomBox.dispose();
+              barrel.dispose();
+              BABYLON.SceneLoader.ImportMesh("", "", "barrel.glb", scene, function (newMeshes) {
+            // Set the target of the camera to the first imported mesh
+            camera.target = newMeshes[0];
+            barrel = newMeshes[0];
+        });
+});
+
+
+//light rays from source
+var lightRays = new BABYLON.VolumetricLightScatteringPostProcess('lightRays', 1.0, camera, lightShape, 100, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
+lightRays._volumetricLightScatteringRTT.renderParticles = true;
+// lightRays.exposure = 0.2;
+// lightRays.decay = 0.5;
+lightRays.weight = 0.7;
+lightRays.density = 0.5;
+//lightRays.useDiffuseColor = true; // False as default
+//lightRays.mesh.material.diffuseColor = new BABYLON.Color3(0.0, 1.0, 0.0);
+
+//execute change on click
 room.actionManager = new BABYLON.ActionManager(scene);
 room.actionManager.registerAction(
-    new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, changeLightColor)
+    new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, changeLightColor),
+    // new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, changeModel)
 );
+// room.actionManager = new BABYLON.ActionManager(scene);
+// room.actionManager.registerAction(
+//     new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, changeModel)
+// );
 return scene;
 }
         
