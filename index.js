@@ -20,7 +20,7 @@ const scene = new BABYLON.Scene(engine);
 const camera = new BABYLON.ArcRotateCamera("camera", 4.72, 1.6, 0, new BABYLON.Vector3(0, 0, -550));
 camera.attachControl(canvas, true);
 //denie scroll
-// camera.lowerRadiusLimit = camera.upperRadiusLimit = camera.radius = 0; 
+camera.lowerRadiusLimit = camera.upperRadiusLimit = camera.radius = 0; 
 
 //set lights
 //default room color
@@ -131,20 +131,20 @@ var barrel;
 
 BABYLON.SceneLoader.ImportMesh("", "", "skull.glb", scene, function (newMeshes) {
     // Set the target of the camera to the first imported mesh
-    camera.target = newMeshes[0];
+    // camera.target = newMeshes[0];
     skull = newMeshes[0];
 });
 
 BABYLON.SceneLoader.ImportMesh("", "", "bomBox.glb", scene, function (newMeshes) {
     // Set the target of the camera to the first imported mesh
-    camera.target = newMeshes[0];
+    // camera.target = newMeshes[0];
     bomBox = newMeshes[0];
     bomBox.dispose();
 });
 
 BABYLON.SceneLoader.ImportMesh("", "", "barrel.glb", scene, function (newMeshes) {
     // Set the target of the camera to the first imported mesh
-    camera.target = newMeshes[0];
+    // camera.target = newMeshes[0];
     barrel = newMeshes[0];
     barrel.dispose();
 });
@@ -158,7 +158,7 @@ skullBut.addEventListener("click",
             barrel.dispose();
               BABYLON.SceneLoader.ImportMesh("", "", "skull.glb", scene, function (newMeshes) {
             // Set the target of the camera to the first imported mesh
-            camera.target = newMeshes[0];
+            // camera.target = newMeshes[0];
             skull = newMeshes[0];
         });
 });
@@ -172,7 +172,7 @@ bomBoxBut.addEventListener("click",
               barrel.dispose();
               BABYLON.SceneLoader.ImportMesh("", "", "bomBox.glb", scene, function (newMeshes) {
             // Set the target of the camera to the first imported mesh
-            camera.target = newMeshes[0];
+            // camera.target = newMeshes[0];
             bomBox = newMeshes[0];
         });
 });
@@ -186,7 +186,7 @@ barrelBut.addEventListener("click",
               barrel.dispose();
               BABYLON.SceneLoader.ImportMesh("", "", "barrel.glb", scene, function (newMeshes) {
             // Set the target of the camera to the first imported mesh
-            camera.target = newMeshes[0];
+            // camera.target = newMeshes[0];
             barrel = newMeshes[0];
         });
 });
